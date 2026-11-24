@@ -4,8 +4,9 @@
 One 1024x1024 newspaper page: 3 heroes + 10 cards + a 22-line ALSO
 rail = exactly 35 stories, across 7 regions including Oceania, every
 story dated to Monday 23 November 2026. Geometry first (GATES.md):
-hero headlines >= 30px, card headlines >= 19px, brief text >= 14px,
-in-scene labels >= 13px. The layout clones the measured superskie
+hero headlines 38px, card headlines 24px, brief text >= 14px,
+in-scene labels >= 13px (type scale matched to bagarte, the edition
+22 winner, on Ahmad's instruction 2026-11-24). The layout clones the measured superskie
 template of the winning editions (masthead, UTC timeline, hero bands
 inside the scenes, 5-across x 2-row cards with a single pictogram
 strip, dot-grid world map with numbered pins, ALSO rail, red DATE
@@ -461,22 +462,22 @@ assert all(len(r) == 68 for r in LAND_MAP) and len(LAND_MAP) == 30
 # unless a source says exactly that.
 HEROES = [
     ("BENGHAZI, LIBYA", "AFR", "Conflict",
-     "Kyiv says drones sank Russian warship",
-     "Zelensky says " + FIG["merkury_drones"] + " sea drones sank the "
-     "corvette Merkury at Benghazi; a cargo ship was hit; "
+     "Kyiv says drones sank warship",
+     "Zelensky: " + FIG["merkury_drones"] + " sea drones sank Russian "
+     "corvette Merkury; cargo ship hit, "
      + FIG["merkury_injured"] + " hurt.",
      "BBC", "R", FIG["merkury_drones"], "SEA DRONES"),
     ("SANTA CLARA, USA", "AME", "Tech",
-     "Huang is back: Nvidia jumps 31.5%",
+     "Huang is back at Nvidia",
      "Board reinstates Jensen Huang 11 days after he quit; shares "
      + FIG["nvidia_jump"] + " to "
      + FIG["nvidia_close"] + "; Nasdaq " + FIG["nasdaq_gain"] + ".",
      "CNBC", "C", FIG["nvidia_gain"], "ADDED IN A DAY"),
     ("KYIV REGION", "EUR", "Conflict",
-     "Russian strikes kill 15 in Kyiv region",
-     "Dymer block falls, " + FIG["dymer_killed"] + " dead; "
-     + FIG["vyshneve_killed"] + " killed in Vyshneve. "
-     + FIG["drones_overnight"] + " drones overnight; "
+     "Strikes kill 15 in Kyiv region",
+     "Russian strikes: Dymer block falls, " + FIG["dymer_killed"]
+     + " dead; " + FIG["vyshneve_killed"] + " killed in Vyshneve. "
+     + FIG["drones_overnight"] + " drones; "
      + FIG["drones_down"] + " downed.",
      "Al Jazeera", "C", FIG["kyiv_region_killed"], "KILLED"),
 ]
@@ -484,7 +485,7 @@ HEROES = [
 # Cards: (place, region, field, headline, deck, source, sure)
 CARDS = [
     ("HORMUZ", "MEA", "Conflict",
-     "Iran vows \u2018all means\u2019 vs blockade",
+     "Iran vows \u2018all means\u2019",
      "Tehran cites self-defence; Trump vows to sink runners.",
      "Al Jazeera", "R"),
     ("BRUSSELS", "EUR", "Politics",
@@ -502,8 +503,8 @@ CARDS = [
      + " hurt; UN building hit. Army blames RSF.",
      "Japan Times", "R"),
     ("RICHMOND", "AME", "Tech",
-     "US states sue Musk firms over Grok",
-     "Virginia and Oregon sue over sexualised images.",
+     "US states sue Musk firms",
+     "Virginia, Oregon sue over Grok images.",
      "Al Jazeera", "C"),
     ("GAZA", "MEA", "Society",
      "Oxfam: Gaza a \u2018toxic wasteland\u2019",
@@ -516,16 +517,16 @@ CARDS = [
      + " independence vote.",
      "La Naci\u00f3n", "C"),
     ("BRENTFORD", "EUR", "Sport",
-     "Brentford beat 10-man Everton 4-0",
-     "Lewis-Potter scores twice in Monday-night win.",
+     "Brentford beat Everton 4-0",
+     "Lewis-Potter twice; Everton down to 10 men.",
      "Sky Sports", "C"),
     ("NEW DELHI", "ASI", "Diplomacy",
-     "India pledges $1.62bn aid to Nepal",
+     "India pledges Nepal $1.62bn",
      "After Aug floods killed " + FIG["nepal_flood_dead"]
      + "; railway and power deals.",
      "Al Jazeera", "C"),
     ("AUSTIN", "AME", "Economy",
-     "CrowdStrike buys Zscaler for $44bn",
+     "CrowdStrike buys Zscaler",
      "AI is supercharging cyberattacks, CrowdStrike says.",
      "CNBC", "C"),
 ]
@@ -611,34 +612,34 @@ def all_stories():
 
 
 # ------------------------------------------------------------ hero scenes
-# Each scene is 324x96. The red statement band covers the bottom 21px,
-# so all art stays in the top 72px. The dominant shape of each scene is
+# Each scene is 324x72. The red statement band covers the bottom 21px,
+# so all art stays in the top 51px. The dominant shape of each scene is
 # registered as an OBSTACLE; the scene's own label (same tag) is exempt.
 def scene_benghazi(d, x, y, w, h):
     # DOMINANT: the listing corvette, hull half out of a dusk sea.
-    _sky(d, x, y, w, 72, (232, 150, 90), (60, 80, 120))
-    d.ellipse([x + 268, y + 6, x + 296, y + 34], fill=(250, 220, 160))
-    d.rectangle([x, y + 58, x + w, y + 72], fill=(30, 70, 110))
+    _sky(d, x, y, w, 51, (232, 150, 90), (60, 80, 120))
+    d.ellipse([x + 268, y + 4, x + 296, y + 24], fill=(250, 220, 160))
+    d.rectangle([x, y + 41, x + w, y + 51], fill=(30, 70, 110))
     for wx in (8, 60, 120, 180, 240, 290):
-        d.arc([x + wx, y + 60, x + wx + 24, y + 70], 180, 360,
+        d.arc([x + wx, y + 43, x + wx + 24, y + 50], 180, 360,
               fill=(180, 210, 235), width=2)
-    hull = [(x + 48, y + 58), (x + 276, y + 48), (x + 288, y + 64),
-            (x + 60, y + 72)]
+    hull = [(x + 48, y + 41), (x + 276, y + 34), (x + 288, y + 46),
+            (x + 60, y + 51)]
     d.polygon(hull, fill=(44, 48, 58))
-    OBSTACLES.append(((x + 48, y + 48, x + 288, y + 72),
+    OBSTACLES.append(((x + 48, y + 34, x + 288, y + 51),
                       "benghazi listing hull", TAG[0]))
-    d.polygon([(x + 60, y + 72), (x + 288, y + 64), (x + 288, y + 68),
-               (x + 60, y + 74)], fill=(140, 40, 36))
-    d.rectangle([x + 150, y + 38, x + 190, y + 52], fill=(70, 74, 84))
-    d.line([x + 170, y + 38, x + 152, y + 20], fill=(30, 34, 44), width=3)
-    for sx, sy, sr in ((210, 16, 9), (228, 8, 11), (248, 14, 8)):
+    d.polygon([(x + 60, y + 50), (x + 288, y + 45), (x + 288, y + 48),
+               (x + 60, y + 52)], fill=(140, 40, 36))
+    d.rectangle([x + 150, y + 27, x + 190, y + 37], fill=(70, 74, 84))
+    d.line([x + 170, y + 27, x + 152, y + 14], fill=(30, 34, 44), width=3)
+    for sx, sy, sr in ((210, 11, 9), (228, 6, 11), (248, 10, 8)):
         d.ellipse([x + sx, y + sy, x + sx + sr * 2, y + sy + sr],
                   fill=(90, 90, 100))
-    _burst(d, x + 292, y + 52, 11)
-    d.polygon([(x + 14, y + 64), (x + 44, y + 64), (x + 40, y + 70),
-               (x + 18, y + 70)], fill=(24, 28, 38))
-    d.line([x + 28, y + 64, x + 28, y + 56], fill=(24, 28, 38), width=2)
-    d.line([x + 8, y + 68, x + 50, y + 68], fill=(180, 210, 235), width=1)
+    _burst(d, x + 292, y + 37, 10)
+    d.polygon([(x + 14, y + 45), (x + 44, y + 45), (x + 40, y + 50),
+               (x + 18, y + 50)], fill=(24, 28, 38))
+    d.line([x + 28, y + 45, x + 28, y + 40], fill=(24, 28, 38), width=2)
+    d.line([x + 8, y + 48, x + 50, y + 48], fill=(180, 210, 235), width=1)
     plate = [x + 10, y + 6, x + 102, y + 26]
     d.rectangle(plate, fill=(240, 238, 228), outline=INK, width=2)
     OBSTACLES.append((tuple(plate), "benghazi name plate", TAG[0]))
@@ -648,22 +649,22 @@ def scene_benghazi(d, x, y, w, h):
 
 def scene_nvidia(d, x, y, w, h):
     # DOMINANT: one giant green chip under a rising arrow.
-    d.rectangle([x, y, x + w, y + 72], fill=(16, 22, 40))
-    for sx, sy in ((26, 10), (296, 8), (250, 60)):
+    d.rectangle([x, y, x + w, y + h], fill=(16, 22, 40))
+    for sx, sy in ((26, 8), (296, 6), (250, 42)):
         d.ellipse([x + sx, y + sy, x + sx + 3, y + sy + 3],
                   fill=(200, 210, 235))
-    d.line([x + 14, y + 66, x + 108, y + 40, x + 170, y + 48,
-            x + 236, y + 18, x + 306, y + 10], fill=(0, 200, 90), width=5)
-    d.polygon([(x + 306, y + 10), (x + 288, y + 8), (x + 296, y + 24)],
+    d.line([x + 14, y + 47, x + 108, y + 28, x + 170, y + 34,
+            x + 236, y + 13, x + 306, y + 7], fill=(0, 200, 90), width=5)
+    d.polygon([(x + 306, y + 7), (x + 288, y + 6), (x + 296, y + 17)],
               fill=(0, 200, 90))
-    chip = [x + 118, y + 16, x + 206, y + 70]
+    chip = [x + 118, y + 11, x + 206, y + 50]
     d.rounded_rectangle(chip, radius=6, fill=(118, 185, 0))
     OBSTACLES.append((tuple(chip), "nvidia chip", TAG[0]))
     for px in range(126, 200, 12):
-        d.rectangle([x + px, y + 10, x + px + 4, y + 16], fill=(90, 140, 0))
-        d.rectangle([x + px, y + 70, x + px + 4, y + 76], fill=(90, 140, 0))
-    d.rectangle([x + 146, y + 32, x + 178, y + 54], fill=(16, 22, 40))
-    d.text((x + 162, y + 43), "NVDA", font=SANS_B(15),
+        d.rectangle([x + px, y + 6, x + px + 4, y + 11], fill=(90, 140, 0))
+        d.rectangle([x + px, y + 50, x + px + 4, y + 55], fill=(90, 140, 0))
+    d.rectangle([x + 146, y + 22, x + 178, y + 38], fill=(16, 22, 40))
+    d.text((x + 162, y + 30), "NVDA", font=SANS_B(15),
            fill=(255, 255, 255), anchor="mm")
 
 
@@ -671,33 +672,33 @@ def scene_kyiv(d, x, y, w, h):
     # DOMINANT: a shelled apartment block in Dymer, listing on rubble,
     # smoke above, a rescue crane at the right. The plate names the
     # place because the band names the region.
-    _sky(d, x, y, w, 72, (186, 178, 164), (140, 142, 148))
+    _sky(d, x, y, w, 51, (186, 178, 164), (140, 142, 148))
     for (sx, sy, sr) in ((x + 90, y + 2, 16), (x + 150, y - 2, 20),
                          (x + 210, y + 6, 14)):
         d.ellipse([sx - sr, sy, sx + sr, sy + sr], fill=(120, 118, 112))
-    d.polygon([(x + 40, y + 14), (x + 196, y + 8), (x + 206, y + 66),
-               (x + 32, y + 66)], fill=(158, 146, 128))
-    OBSTACLES.append(((x + 32, y + 8, x + 206, y + 66),
+    d.polygon([(x + 40, y + 10), (x + 196, y + 6), (x + 206, y + 47),
+               (x + 32, y + 47)], fill=(158, 146, 128))
+    OBSTACLES.append(((x + 32, y + 6, x + 206, y + 47),
                       "kyiv block", TAG[0]))
     for row in range(3):
         for col in range(5):
             wx = x + 52 + col * 30
-            wy = y + 20 + row * 15
+            wy = y + 14 + row * 11
             if (row, col) in ((0, 2), (1, 3), (2, 1)):
-                d.polygon([(wx, wy), (wx + 14, wy + 2), (wx + 12, wy + 10),
-                           (wx + 2, wy + 8)], fill=(40, 36, 34))
+                d.polygon([(wx, wy), (wx + 14, wy + 1), (wx + 12, wy + 7),
+                           (wx + 2, wy + 6)], fill=(40, 36, 34))
             else:
-                d.rectangle([wx, wy, wx + 13, wy + 9], fill=(52, 48, 46))
-    d.polygon([(x + 206, y + 66), (x + 262, y + 66), (x + 238, y + 40),
-               (x + 214, y + 52)], fill=(120, 114, 104))
-    d.rectangle([x + 282, y + 18, x + 288, y + 66], fill=(200, 160, 30))
-    d.line([x + 285, y + 18, x + 246, y + 30], fill=(200, 160, 30),
+                d.rectangle([wx, wy, wx + 13, wy + 7], fill=(52, 48, 46))
+    d.polygon([(x + 206, y + 47), (x + 262, y + 47), (x + 238, y + 28),
+               (x + 214, y + 37)], fill=(120, 114, 104))
+    d.rectangle([x + 282, y + 13, x + 288, y + 47], fill=(200, 160, 30))
+    d.line([x + 285, y + 13, x + 246, y + 21], fill=(200, 160, 30),
            width=4)
-    d.line([x + 246, y + 30, x + 246, y + 44], fill=(60, 56, 52), width=2)
-    plate = [x + 8, y + 6, x + 104, y + 26]
+    d.line([x + 246, y + 21, x + 246, y + 31], fill=(60, 56, 52), width=2)
+    plate = [x + 8, y + 5, x + 104, y + 24]
     d.rectangle(plate, fill=(240, 238, 228), outline=INK, width=2)
     OBSTACLES.append((tuple(plate), "kyiv place plate", TAG[0]))
-    d.text((x + 56, y + 16), "DYMER", font=SANS_B(13), fill=RED,
+    d.text((x + 56, y + 14), "DYMER", font=SANS_B(13), fill=RED,
            anchor="mm")
 
 
@@ -706,16 +707,16 @@ HERO_SCENES = [scene_benghazi, scene_nvidia, scene_kyiv]
 
 # ---------------------------------------------------------- card pictograms
 # One dominant pictogram per card, drawn natively at strip size
-# (190x42) on a throwaway canvas: the topic must read from the symbol
+# (190x48) on a throwaway canvas: the topic must read from the symbol
 # alone before any word is decoded.
 def pic_mine(g, ox, oy, wd, ht):
     # DOMINANT: one spiked naval mine, drawn at strip size; the topic
     # (a minefield in the strait) must read from the symbol alone.
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(16, 40, 66))
     for wx in (14, 60, 106, 152):
-        g.arc([ox + wx, oy + 34, ox + wx + 24, oy + 42], 180, 360,
+        g.arc([ox + wx, oy + ht - 8, ox + wx + 24, oy + ht], 180, 360,
               fill=(120, 160, 200), width=2)
-    mx, my = ox + 78, oy + 21
+    mx, my = ox + 78, oy + ht // 2
     for ang in range(0, 360, 45):
         rad = math.radians(ang)
         g.line([mx + 11 * math.cos(rad), my + 11 * math.sin(rad),
@@ -733,13 +734,13 @@ def pic_plane(g, ox, oy, wd, ht):
     # a small airliner flying past it at the top. The overlay owns the
     # lower-right, the flag and chip the top corners, so the tower and
     # the plane sit in the free middle band.
-    g.rectangle([ox + 42, oy + 14, ox + 54, oy + 42], fill=(90, 96, 106))
+    g.rectangle([ox + 42, oy + 16, ox + 54, oy + ht], fill=(90, 96, 106))
     g.rectangle([ox + 36, oy + 4, ox + 60, oy + 14], fill=dark)
     g.rectangle([ox + 39, oy + 7, ox + 46, oy + 11], fill=(250, 214, 120))
     g.rectangle([ox + 49, oy + 7, ox + 57, oy + 11], fill=(250, 214, 120))
     g.line([ox + 48, oy + 4, ox + 48, oy + 1], fill=dark, width=2)
     g.ellipse([ox + 45, oy + 0, ox + 51, oy + 4], fill=(200, 40, 36))
-    g.rectangle([ox + 32, oy + 38, ox + 64, oy + 42], fill=dark)
+    g.rectangle([ox + 32, oy + ht - 4, ox + 64, oy + ht], fill=dark)
     g.polygon([(ox + 70, oy + 10), (ox + 90, oy + 8), (ox + 106, oy + 8),
                (ox + 112, oy + 10), (ox + 106, oy + 12), (ox + 90, oy + 12),
                (ox + 72, oy + 12)], fill=dark)
@@ -747,73 +748,74 @@ def pic_plane(g, ox, oy, wd, ht):
                (ox + 107, oy + 8)], fill=dark)
     g.polygon([(ox + 82, oy + 12), (ox + 90, oy + 12), (ox + 94, oy + 16),
                (ox + 86, oy + 16)], fill=(200, 40, 36))
-    g.line([ox + 44, oy + 38, ox + wd, oy + 38], fill=(120, 130, 140),
-           width=2)
+    g.line([ox + 44, oy + ht - 4, ox + wd, oy + ht - 4],
+           fill=(120, 130, 140), width=2)
 
 
 def pic_chart_down(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(210, 218, 208))
-    for idx, bar_h in enumerate((36, 27, 19, 12)):
+    for idx, bar_h in enumerate((41, 31, 22, 14)):
         bx = ox + 14 + idx * 30
-        g.rectangle([bx, oy + 42 - bar_h, bx + 20, oy + 42],
+        g.rectangle([bx, oy + ht - bar_h, bx + 20, oy + ht],
                     fill=(52, 84, 140))
-    g.line([ox + 10, oy + 8, ox + 52, oy + 18, ox + 88, oy + 15,
-            ox + 128, oy + 34], fill=(200, 40, 36), width=5)
-    g.polygon([(ox + 128, oy + 34), (ox + 114, oy + 33), (ox + 122, oy + 20)],
-              fill=(200, 40, 36))
+    g.line([ox + 10, oy + 9, ox + 52, oy + 21, ox + 88, oy + 17,
+            ox + 128, oy + 39], fill=(200, 40, 36), width=5)
+    g.polygon([(ox + 128, oy + 39), (ox + 114, oy + 38),
+               (ox + 122, oy + 23)], fill=(200, 40, 36))
 
 
 def pic_blast(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(188, 178, 168))
-    g.rectangle([ox + 8, oy + 33, ox + 130, oy + 42], fill=(44, 42, 46))
+    g.rectangle([ox + 8, oy + ht - 9, ox + 130, oy + ht], fill=(44, 42, 46))
     for wx in (20, 44, 68, 92):
-        g.rectangle([ox + wx, oy + 36, ox + wx + 7, oy + 40],
+        g.rectangle([ox + wx, oy + ht - 6, ox + wx + 7, oy + ht - 2],
                     fill=(250, 214, 120))
-    _burst(g, ox + 66, oy + 19, 19)
+    _burst(g, ox + 66, oy + 22, 21)
 
 
 def pic_gavel(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(216, 206, 178))
     g.polygon([(ox + 30, oy + 6), (ox + 96, oy + 6), (ox + 96, oy + 20),
                (ox + 30, oy + 20)], fill=(96, 62, 34))
-    g.polygon([(ox + 56, oy + 20), (ox + 70, oy + 20), (ox + 82, oy + 38),
-               (ox + 68, oy + 38)], fill=(60, 40, 22))
-    g.rectangle([ox + 52, oy + 36, ox + 96, oy + 42], fill=(96, 62, 34))
-    g.ellipse([ox + 128, oy + 8, ox + 152, oy + 32], fill=(200, 40, 36),
+    g.polygon([(ox + 56, oy + 20), (ox + 70, oy + 20), (ox + 82, oy + 44),
+               (ox + 68, oy + 44)], fill=(60, 40, 22))
+    g.rectangle([ox + 52, oy + ht - 6, ox + 96, oy + ht], fill=(96, 62, 34))
+    g.ellipse([ox + 128, oy + 10, ox + 152, oy + 36], fill=(200, 40, 36),
               outline=(120, 20, 20), width=2)
 
 
 def pic_warning(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(240, 222, 130))
-    g.polygon([(ox + 66, oy + 4), (ox + 124, oy + 38), (ox + 8, oy + 38)],
-              fill=(220, 160, 20), outline=(24, 28, 38))
-    g.rectangle([ox + 62, oy + 14, ox + 70, oy + 28], fill=(24, 28, 38))
-    g.ellipse([ox + 62, oy + 31, ox + 70, oy + 39], fill=(24, 28, 38))
+    g.polygon([(ox + 66, oy + 5), (ox + 130, oy + ht - 4),
+               (ox + 2, oy + ht - 4)], fill=(220, 160, 20),
+              outline=(24, 28, 38))
+    g.rectangle([ox + 62, oy + 16, ox + 70, oy + 32], fill=(24, 28, 38))
+    g.ellipse([ox + 62, oy + 35, ox + 70, oy + 43], fill=(24, 28, 38))
 
 
 def pic_scales(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(196, 208, 220))
-    g.rectangle([ox + 64, oy + 4, ox + 68, oy + 38], fill=(24, 28, 38))
-    g.rectangle([ox + 48, oy + 38, ox + 84, oy + 42], fill=(24, 28, 38))
+    g.rectangle([ox + 64, oy + 5, ox + 68, oy + ht - 4], fill=(24, 28, 38))
+    g.rectangle([ox + 48, oy + ht - 4, ox + 84, oy + ht], fill=(24, 28, 38))
     g.line([ox + 20, oy + 10, ox + 112, oy + 10], fill=(24, 28, 38),
            width=4)
     for px in (20, 112):
-        g.line([ox + px, oy + 10, ox + px - 12, oy + 26], fill=(24, 28, 38),
+        g.line([ox + px, oy + 10, ox + px - 12, oy + 30], fill=(24, 28, 38),
                width=2)
-        g.line([ox + px, oy + 10, ox + px + 12, oy + 26], fill=(24, 28, 38),
+        g.line([ox + px, oy + 10, ox + px + 12, oy + 30], fill=(24, 28, 38),
                width=2)
-        g.arc([ox + px - 13, oy + 22, ox + px + 13, oy + 36], 0, 180,
+        g.arc([ox + px - 13, oy + 25, ox + px + 13, oy + 41], 0, 180,
               fill=(200, 40, 36), width=3)
 
 
 def pic_ball(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(96, 160, 96))
-    g.ellipse([ox + 52, oy + 2, ox + 94, oy + 40], fill=(255, 255, 255),
+    g.ellipse([ox + 52, oy + 3, ox + 94, oy + 45], fill=(255, 255, 255),
               outline=(24, 28, 38), width=2)
-    g.polygon([(ox + 73, oy + 12), (ox + 83, oy + 19), (ox + 79, oy + 30),
-               (ox + 67, oy + 30), (ox + 63, oy + 19)], fill=(24, 28, 38))
-    for (lx, ly) in ((58, 8), (88, 8), (58, 32), (88, 32)):
-        g.line([ox + 73, oy + 21, ox + lx, oy + ly], fill=(24, 28, 38),
+    g.polygon([(ox + 73, oy + 14), (ox + 83, oy + 22), (ox + 79, oy + 34),
+               (ox + 67, oy + 34), (ox + 63, oy + 22)], fill=(24, 28, 38))
+    for (lx, ly) in ((58, 9), (88, 9), (58, 37), (88, 37)):
+        g.line([ox + 73, oy + 24, ox + lx, oy + ly], fill=(24, 28, 38),
                width=2)
 
 
@@ -821,20 +823,20 @@ def pic_moneybag(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(210, 226, 196))
     g.polygon([(ox + 58, oy + 6), (ox + 88, oy + 6), (ox + 82, oy + 14),
                (ox + 64, oy + 14)], fill=(96, 62, 34))
-    g.ellipse([ox + 48, oy + 12, ox + 98, oy + 40], fill=(222, 184, 120),
+    g.ellipse([ox + 48, oy + 14, ox + 98, oy + 46], fill=(222, 184, 120),
               outline=(96, 62, 34), width=2)
-    g.ellipse([ox + 106, oy + 28, ox + 124, oy + 40], fill=(250, 214, 120),
+    g.ellipse([ox + 106, oy + 32, ox + 124, oy + 46], fill=(250, 214, 120),
               outline=(150, 110, 40), width=1)
-    g.ellipse([ox + 112, oy + 16, ox + 128, oy + 28], fill=(250, 214, 120),
+    g.ellipse([ox + 112, oy + 18, ox + 128, oy + 32], fill=(250, 214, 120),
               outline=(150, 110, 40), width=1)
 
 
 def pic_shield(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(196, 208, 220))
-    g.polygon([(ox + 56, oy + 4), (ox + 96, oy + 4), (ox + 96, oy + 22),
-               (ox + 76, oy + 40), (ox + 56, oy + 22)], fill=(52, 84, 140),
+    g.polygon([(ox + 56, oy + 5), (ox + 96, oy + 5), (ox + 96, oy + 25),
+               (ox + 76, oy + 46), (ox + 56, oy + 25)], fill=(52, 84, 140),
               outline=(24, 28, 38))
-    g.line([ox + 64, oy + 22, ox + 72, oy + 30, ox + 90, oy + 12],
+    g.line([ox + 64, oy + 25, ox + 72, oy + 34, ox + 90, oy + 14],
            fill=(255, 255, 255), width=4)
 
 
@@ -904,16 +906,16 @@ def main():
         place, region, field, head, deck, src, sure, big, biglab = hero
         x = MX + i * (hw + 13)
         TAG[0] = ("hero", i)
-        HERO_SCENES[i](d, x, hy, hw, 96)
+        HERO_SCENES[i](d, x, hy, hw, 72)
         TAG[0] = None
         band = f"{place.split(',')[0]} \u2014 {big} {biglab}"
-        d.rectangle([x, hy + 75, x + hw, hy + 96], fill=(176, 32, 28))
+        d.rectangle([x, hy + 51, x + hw, hy + 72], fill=(176, 32, 28))
         bw = d.textlength(band, font=SANS_B(13))
-        d.text((x + (hw - bw) / 2, hy + 79), band, font=SANS_B(13),
+        d.text((x + (hw - bw) / 2, hy + 55), band, font=SANS_B(13),
                fill=(255, 255, 255))
         check_h(f"hero{i+1} band", band, SANS_B(13),
                 x + (hw - bw) / 2, x + hw - 4)
-        ky = hy + 102
+        ky = hy + 74
         col = REGIONS[region][1]
         d.ellipse([x + 1, ky, x + 19, ky + 18], fill=col)
         num = str(i + 1)
@@ -931,24 +933,24 @@ def main():
                fill=scol)
         check_h(f"hero{i+1} kicker", kick, SANS_B(14), x + 25,
                 x + hw - chw2 - 6)
-        text_block(d, x, ky + 22, head, SERIF(30), INK, hw - 2, 34,
-                   max_lines=2, tag=f"hero{i}")
-        text_block(d, x, ky + 98, deck, SANS(13), (52, 48, 42), hw - 2,
+        hend = text_block(d, x, ky + 16, head, SERIF(38), INK, hw - 2,
+                          41, max_lines=2, tag=f"hero{i}")
+        text_block(d, x, hend + 9, deck, SANS(15), (52, 48, 42), hw - 2,
                    17, max_lines=2, tag=f"herodeck{i}")
 
     # -------------------------------- cards: 5 across x 2 rows
-    cy = 414
+    cy = 396
     cw = (RX - MX - 40) // 5
-    chh = 142
+    chh = 159
     for i, card in enumerate(CARDS):
         place, region, field, head, deck0, src, sure = card
         x = MX + (i % 5) * (cw + 10)
-        yy0 = cy + (i // 5) * (chh + 8)
-        tmp = Image.new("RGB", (190, 42), PAPER)
+        yy0 = cy + (i // 5) * (chh + 6)
+        tmp = Image.new("RGB", (190, 48), PAPER)
         td = ImageDraw.Draw(tmp)
-        STRIP_PICS[i](td, 0, 0, 190, 42)
+        STRIP_PICS[i](td, 0, 0, 190, 48)
         img.paste(tmp, (x + 1, yy0 + 1))
-        d.rounded_rectangle([x, yy0, x + cw, yy0 + 43], radius=4,
+        d.rounded_rectangle([x, yy0, x + cw, yy0 + 49], radius=4,
                             outline=(120, 112, 96), width=1)
         flag(d, CARD_FLAGS[i], x + 5, yy0 + 5, w=24, h=16)
         FLAGS.append(((x + 5, yy0 + 5, x + 29, yy0 + 21),
@@ -964,25 +966,25 @@ def main():
         ov = CARD_OVERLAYS[i]
         ov_font = SANS_B(19) if len(ov) <= 10 else SANS_B(17)
         ow = d.textlength(ov, font=ov_font)
-        d.text((x + cw - ow - 6, yy0 + 20), ov, font=ov_font,
+        d.text((x + cw - ow - 6, yy0 + 26), ov, font=ov_font,
                fill=(16, 20, 34), stroke_width=2,
                stroke_fill=(255, 253, 246))
         col = REGIONS[region][1]
-        d.ellipse([x + 1, yy0 + 48, x + 17, yy0 + 64], fill=col)
+        d.ellipse([x + 1, yy0 + 52, x + 17, yy0 + 68], fill=col)
         num = str(i + 4)
         nw = d.textlength(num, font=SANS_B(11))
-        d.text((x + 9 - nw / 2, yy0 + 50), num, font=SANS_B(11),
+        d.text((x + 9 - nw / 2, yy0 + 54), num, font=SANS_B(11),
                fill=(255, 255, 255))
-        d.text((x + 22, yy0 + 49), place, font=SANS_B(12), fill=col)
+        d.text((x + 22, yy0 + 53), place, font=SANS_B(12), fill=col)
         check_h(f"card{i+4} kicker", place, SANS_B(12), x + 22,
                 x + cw - 4)
-        text_block(d, x, yy0 + 66, head, SERIF(19), INK, cw - 4, 23,
+        text_block(d, x, yy0 + 64, head, SERIF(24), INK, cw - 4, 29,
                    max_lines=2, tag=f"card{i}")
-        text_block(d, x, yy0 + 115, deck0, SANS(12), (52, 48, 42),
-                   cw - 4, 15, max_lines=2, tag=f"carddeck{i}")
+        text_block(d, x, yy0 + 125, deck0, SANS(13), (52, 48, 42),
+                   cw - 4, 16, max_lines=2, tag=f"carddeck{i}")
 
     # -------------------------------- bottom: map left, ALSO right
-    by0 = 712
+    by0 = 720
     d.line([MX, by0, RX, by0], fill=INK, width=2)
     LINES.append(((MX, by0, RX, by0), "bottom rule"))
     d.text((MX, by0 + 8), "WHERE IT HAPPENED", font=SANS_B(14), fill=RED)
@@ -1051,7 +1053,7 @@ def main():
                 x + colw2 - 2)
 
     # -------------------------------- DATE CHECK box
-    dy = 928
+    dy = 936
     d.rectangle([MX, dy, RX, dy + 56], fill=(253, 240, 238),
                 outline=RED, width=2)
     LINES.append(((MX, dy, RX, dy), "datecheck top"))
