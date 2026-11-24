@@ -37,6 +37,21 @@ below, left edges aligned, hairlines between entries);
 timeline columns exactly even (fractional step)
 with centred entries.
 
+Finding class closed after an independent visual inspection
+(2-4x zoom) caught what the box audits could not see: overlay
+text is now audited from its GLYPH INK (stroke included)
+against its own strip's outline, its own pictogram pixels and
+the flag/tab/chip furniture — the STRIP-AUDIT, printed per
+card, no own-scene exception; hero chips, bands and plates
+report their ink margins the same way (LABEL-AUDIT). The rail
+hairlines sit in the first empty row under each caption, so
+every figure keeps 3 clear rows below its hairline
+(RAIL-AUDIT); the DATE CHECK text is padded 3px inside its
+box on all four sides (DC-AUDIT). Consequences in the art:
+Brussels' overlay is one size down with the tower moved left
+and the plane low; the gavel, the scales and the moneybag's
+coins all sit below their overlays.
+
 Two lessons from the edition 22 final verdict are binding rules here:
 (1) FRAMING = FAITHFULNESS: any disputed / denied / escalating claim
 carries its attribution INSIDE the hero headline or band itself
@@ -53,6 +68,8 @@ clock; two runs are byte-identical.
 """
 import json
 import math
+
+import numpy as np
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -60,6 +77,11 @@ from PIL import Image, ImageDraw, ImageFont
 W, H = 1024, 1024
 HERE = Path(__file__).resolve().parent
 FONT_DIR = HERE / "fonts"
+STRIP_AUDIT = []
+HERO_AUDIT = []
+PLATE_AUDIT = []
+RAIL_AUDIT = []
+DC_AUDIT = []
 FIG = {f["key"]: f["display"]
        for f in json.loads((HERE / "figures.json").read_text())["figures"]}
 
@@ -683,6 +705,13 @@ def scene_benghazi(d, x, y, w, h):
     OBSTACLES.append((tuple(plate), "benghazi name plate", TAG[0]))
     d.text((x + 47, y + 12), "MERKURY", font=SANS_B(12), fill=NAVY,
            anchor="mm")
+    _pb = d.textbbox((0, 0), "MERKURY", font=SANS_B(12))
+    _iw, _ih = _pb[2] - _pb[0], _pb[3] - _pb[1]
+    PLATE_AUDIT.append(("hero1 plate", "MERKURY",
+                        (round(47 - _iw / 2 - 7),
+                         round(12 - _ih / 2 - 4),
+                         round(87 - 47 - _iw / 2),
+                         round(20 - 12 - _ih / 2))))
 
 def scene_nvidia(d, x, y, w, h):
     # DOMINANT: one giant green chip under a rising arrow, circuit
@@ -764,6 +793,13 @@ def scene_kyiv(d, x, y, w, h):
     OBSTACLES.append((tuple(plate), "kyiv place plate", TAG[0]))
     d.text((x + 47, y + 12), "DYMER", font=SANS_B(12), fill=RED,
            anchor="mm")
+    _pb = d.textbbox((0, 0), "DYMER", font=SANS_B(12))
+    _iw, _ih = _pb[2] - _pb[0], _pb[3] - _pb[1]
+    PLATE_AUDIT.append(("hero3 plate", "DYMER",
+                        (round(47 - _iw / 2 - 7),
+                         round(12 - _ih / 2 - 4),
+                         round(87 - 47 - _iw / 2),
+                         round(20 - 12 - _ih / 2))))
 
 
 HERO_SCENES = [scene_benghazi, scene_nvidia, scene_kyiv]
@@ -788,29 +824,30 @@ def pic_mine(g, ox, oy, wd, ht):
 def pic_plane(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(170, 196, 216))
     dark = (16, 18, 24)
-    # DOMINANT: a control tower (left, clear of the wide overlay) with
-    # a small airliner flying past it at the top. The overlay owns the
-    # lower-right, the flag and chip the top corners, so the tower and
-    # the plane sit in the free middle band.
-    g.rectangle([ox + 48, oy + 20, ox + 60, oy + ht], fill=(90, 96, 106))
-    g.rectangle([ox + 42, oy + 4, ox + 66, oy + 16], fill=dark)
-    g.rectangle([ox + 45, oy + 8, ox + 52, oy + 13],
+    # DOMINANT: a control tower at the left and a small airliner low
+    # in the middle band. The overlay owns the top-right: the tower
+    # cab ends at x=54 and the plane's highest point (its tail) is
+    # y=25, both clear of the overlay ink (strip-audited).
+    g.rectangle([ox + 30, oy + 4, ox + 54, oy + 16], fill=dark)
+    g.rectangle([ox + 33, oy + 8, ox + 39, oy + 13],
                 fill=(250, 214, 120))
-    g.rectangle([ox + 55, oy + 8, ox + 63, oy + 13],
+    g.rectangle([ox + 42, oy + 8, ox + 49, oy + 13],
                 fill=(250, 214, 120))
-    g.line([ox + 54, oy + 4, ox + 54, oy], fill=dark, width=2)
-    g.ellipse([ox + 51, oy, ox + 57, oy + 4], fill=(200, 40, 36))
-    g.rectangle([ox + 38, oy + ht - 4, ox + 70, oy + ht], fill=dark)
-    g.polygon([(ox + 76, oy + 13), (ox + 96, oy + 10),
-               (ox + 112, oy + 10), (ox + 118, oy + 13),
-               (ox + 112, oy + 16), (ox + 96, oy + 16),
-               (ox + 78, oy + 16)], fill=dark)
-    g.polygon([(ox + 104, oy + 10), (ox + 108, oy + 2),
-               (ox + 113, oy + 2), (ox + 113, oy + 10)], fill=dark)
-    g.polygon([(ox + 88, oy + 16), (ox + 96, oy + 16),
-               (ox + 100, oy + 21), (ox + 92, oy + 21)],
+    g.line([ox + 42, oy + 4, ox + 42, oy], fill=dark, width=2)
+    g.ellipse([ox + 39, oy, ox + 45, oy + 4], fill=(200, 40, 36))
+    g.rectangle([ox + 37, oy + 20, ox + 47, oy + ht],
+                fill=(90, 96, 106))
+    g.rectangle([ox + 29, oy + ht - 4, ox + 55, oy + ht], fill=dark)
+    g.polygon([(ox + 72, oy + 36), (ox + 92, oy + 33),
+               (ox + 108, oy + 33), (ox + 114, oy + 36),
+               (ox + 108, oy + 39), (ox + 92, oy + 39),
+               (ox + 74, oy + 39)], fill=dark)
+    g.polygon([(ox + 100, oy + 33), (ox + 104, oy + 25),
+               (ox + 109, oy + 25), (ox + 109, oy + 33)], fill=dark)
+    g.polygon([(ox + 84, oy + 39), (ox + 92, oy + 39),
+               (ox + 96, oy + 44), (ox + 88, oy + 44)],
               fill=(200, 40, 36))
-    g.line([ox + 50, oy + ht - 4, ox + wd, oy + ht - 4],
+    g.line([ox + 56, oy + ht - 4, ox + wd, oy + ht - 4],
            fill=(120, 130, 140), width=2)
 
 def pic_chart_down(g, ox, oy, wd, ht):
@@ -835,14 +872,21 @@ def pic_blast(g, ox, oy, wd, ht):
 
 def pic_gavel(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(216, 206, 178))
-    g.polygon([(ox + 31, oy + 6), (ox + 97, oy + 6), (ox + 97, oy + 18),
-               (ox + 31, oy + 18)], fill=(96, 62, 34))
-    g.polygon([(ox + 57, oy + 18), (ox + 71, oy + 18),
-               (ox + 81, oy + 46), (ox + 67, oy + 46)],
-              fill=(60, 40, 22))
-    g.rectangle([ox + 53, oy + ht - 6, ox + 97, oy + ht],
+    # The gavel sits low (head top y=25) so head and handle stay
+    # clear of the overlay ink across the top; a red seal at the
+    # right balances the composition.
+    g.rectangle([ox + 28, oy + 25, ox + 94, oy + 37],
                 fill=(96, 62, 34))
-    g.ellipse([ox + 118, oy + 12, ox + 142, oy + 36],
+    g.rectangle([ox + 28, oy + 25, ox + 34, oy + 37],
+                fill=(60, 40, 22))
+    g.rectangle([ox + 88, oy + 25, ox + 94, oy + 37],
+                fill=(60, 40, 22))
+    g.polygon([(ox + 56, oy + 37), (ox + 70, oy + 37),
+               (ox + 80, oy + 53), (ox + 66, oy + 53)],
+              fill=(60, 40, 22))
+    g.rectangle([ox + 24, oy + 51, ox + 76, oy + ht],
+                fill=(96, 62, 34))
+    g.ellipse([ox + 104, oy + 32, ox + 128, oy + 54],
               fill=(200, 40, 36), outline=(120, 20, 20), width=2)
 
 def pic_warning(g, ox, oy, wd, ht):
@@ -856,18 +900,23 @@ def pic_warning(g, ox, oy, wd, ht):
 
 def pic_scales(g, ox, oy, wd, ht):
     g.rectangle([ox, oy, ox + wd, oy + ht], fill=(196, 208, 220))
-    g.rectangle([ox + 63, oy + 4, ox + 67, oy + ht - 4],
+    # The scales sit low and left (beam y=32, post x=50-54) so no
+    # beam, post or string crosses the overlay ink zone at the
+    # top-right (ink from x=62, down to y=26) — strip-audited.
+    g.line([ox + 16, oy + 32, ox + 88, oy + 32], fill=(24, 28, 38),
+           width=3)
+    g.rectangle([ox + 50, oy + 24, ox + 54, oy + 50],
                 fill=(24, 28, 38))
-    g.rectangle([ox + 47, oy + ht - 4, ox + 83, oy + ht],
+    g.ellipse([ox + 48, oy + 19, ox + 56, oy + 25],
+              fill=(24, 28, 38))
+    g.rectangle([ox + 40, oy + 50, ox + 64, oy + ht - 1],
                 fill=(24, 28, 38))
-    g.line([ox + 19, oy + 9, ox + 111, oy + 9], fill=(24, 28, 38),
-           width=4)
-    for px in (19, 111):
-        g.line([ox + px, oy + 9, ox + px - 12, oy + ht - 14],
+    for px in (16, 88):
+        g.line([ox + px, oy + 32, ox + px - 10, oy + 47],
                fill=(24, 28, 38), width=2)
-        g.line([ox + px, oy + 9, ox + px + 12, oy + ht - 14],
+        g.line([ox + px, oy + 32, ox + px + 10, oy + 47],
                fill=(24, 28, 38), width=2)
-        g.arc([ox + px - 12, oy + ht - 20, ox + px + 12, oy + ht - 4],
+        g.arc([ox + px - 10, oy + 43, ox + px + 10, oy + 53],
               0, 180, fill=(200, 40, 36), width=3)
 
 def pic_ball(g, ox, oy, wd, ht):
@@ -887,9 +936,9 @@ def pic_moneybag(g, ox, oy, wd, ht):
                (ox + 55, oy + 12)], fill=(96, 62, 34))
     g.ellipse([ox + 39, oy + 12, ox + 89, oy + 55],
               fill=(222, 184, 120), outline=(96, 62, 34), width=2)
-    g.ellipse([ox + 97, oy + 34, ox + 115, oy + 55],
+    g.ellipse([ox + 102, oy + 34, ox + 120, oy + 53],
               fill=(250, 214, 120), outline=(150, 110, 40), width=1)
-    g.ellipse([ox + 103, oy + 18, ox + 119, oy + 34],
+    g.ellipse([ox + 88, oy + 42, ox + 104, oy + 55],
               fill=(250, 214, 120), outline=(150, 110, 40), width=1)
 
 def pic_shield(g, ox, oy, wd, ht):
@@ -921,21 +970,21 @@ def main():
     land = sum(1 for c in reg_counts if c != "GLO")
     eye_r = (f"{total} STORIES \u00b7 {land} REGIONS + SPACE \u00b7 "
              f"{len(field_counts)} FIELDS")
-    d.text((MX, 2), "ONE DAY OF WORLD NEWS, ONE PICTURE",
+    d.text((MX, 1), "ONE DAY OF WORLD NEWS, ONE PICTURE",
            font=SANS_B(15), fill=RED)
     rw = d.textlength(eye_r, font=SANS_B(22))
-    d.text((RX - rw, -2), eye_r, font=SANS_B(22), fill=INK)
+    d.text((RX - rw, -3), eye_r, font=SANS_B(22), fill=INK)
     check_h("eyebrow left", "ONE DAY OF WORLD NEWS, ONE PICTURE",
             SANS_B(15), MX, RX - rw - 8)
     d.rectangle([MX, 30, RX, 33], fill=RED)
     date = "Monday 23 November 2026"
     dw = d.textlength(date, font=SERIF(76))
-    d.text(((W - dw) / 2, -1), date, font=SERIF(76), fill=INK)
-    d.line([MX, 98, RX, 98], fill=INK, width=2)
-    LINES.append(((MX, 98, RX, 98), "date rule"))
+    d.text(((W - dw) / 2, -2), date, font=SERIF(76), fill=INK)
+    d.line([MX, 97, RX, 97], fill=INK, width=2)
+    LINES.append(((MX, 97, RX, 97), "date rule"))
 
     # -------------------------------- timeline: THE DAY IN UTC
-    ty = 99
+    ty = 98
     d.rectangle([MX, ty, MX + 56, ty + 24], fill=RED)
     for j, s in enumerate(("THE DAY", "IN UTC")):
         tw = d.textlength(s, font=SANS_B(9))
@@ -960,7 +1009,7 @@ def main():
     LINES.append(((MX, ty + 27, RX, ty + 27), "timeline rule"))
 
     # -------------------------------- heroes + THE DAY IN NUMBERS rail
-    hy = 127
+    hy = 126
     hw = 266
     for i, hero in enumerate(HEROES):
         place, region, field, head, deck, src, sure, big, biglab = hero
@@ -977,12 +1026,22 @@ def main():
                 x + (hw - bw) / 2, x + hw - 4)
         scol = SURE_COLORS[sure]
         ct = SURE_LABEL[sure]
-        chw = d.textlength(ct, font=SANS_B(9)) + 10
+        chw = d.textlength(ct, font=SANS_B(9)) + 12
         d.rounded_rectangle([x + hw - chw - 6, hy + 4, x + hw - 6,
                              hy + 20], radius=3, fill=(255, 253, 246),
                             outline=scol, width=1)
         d.text((x + hw - chw + 1, hy + 8), ct, font=SANS_B(9),
                fill=scol)
+        _cb = d.textbbox((0, 0), ct, font=SANS_B(9))
+        HERO_AUDIT.append((f"hero{i+1} chip", ct,
+                           (7 - _cb[0], 4 + _cb[1],
+                            chw - 7 - _cb[2], 12 - _cb[3])))
+        _nb = d.textbbox((0, 0), band, font=SANS_B(13))
+        HERO_AUDIT.append((f"hero{i+1} band", band[:26],
+                           (round((hw - bw) / 2 + _nb[0]),
+                            4 + _nb[1],
+                            round(hw - (hw - bw) / 2 - _nb[2]),
+                            18 - _nb[3])))
         ky = hy + 138
         col = REGIONS[region][1]
         d.ellipse([x, ky, x + 18, ky + 18], fill=col)
@@ -1005,13 +1064,12 @@ def main():
     rx0 = 852
     d.text((rx0, hy + 1), "THE DAY IN NUMBERS", font=SANS_B(13),
            fill=RED)
-    d.line([rx0, hy + 19, RX, hy + 19], fill=(150, 142, 126), width=1)
-    LINES.append(((rx0, hy + 19, RX, hy + 19), "rail rule"))
     rail = [(FIG["kyiv_region_killed"], "KILLED IN KYIV REGION", INK),
             (FIG["drones_overnight"], "DRONES IN ONE NIGHT", INK),
             (FIG["nvidia_jump"], "NVIDIA JUMP IN A DAY", RED),
             ("4-0", "EVERTON BEATEN", INK)]
-    rail_tops = [hy + 20, hy + 77, hy + 134, hy + 205]
+    rail_tops = [hy + 17, hy + 75, hy + 133, hy + 205]
+    rail_spans = []
     for j, ((rnum, rcap, rcol), top) in enumerate(zip(rail, rail_tops)):
         bb = d.textbbox((0, 0), rnum, font=SERIF(55))
         d.text((rx0, top - bb[1]), rnum, font=SERIF(55), fill=rcol)
@@ -1020,13 +1078,20 @@ def main():
         text_block(d, rx0, top + (bb[3] - bb[1]) + 3 - cb[1], rcap,
                    SANS(13), (104, 96, 84), RX - rx0, 15,
                    max_lines=2, tag=f"rail{j}")
+        rail_spans.append((bb[3] - bb[1]) + 3 + (cb[3] - cb[1]))
         if j:
-            ly2 = top - 2
+            ly2 = top - 4
             d.line([rx0, ly2, RX, ly2], fill=(190, 182, 168), width=1)
             LINES.append(((rx0, ly2, RX, ly2), f"rail sep {j}"))
 
+    for j in range(1, 4):
+        RAIL_AUDIT.append((f"rail sep {j}",
+                           rail_tops[j] - 4
+                           - (rail_tops[j - 1] + rail_spans[j - 1]),
+                           rail_tops[j] - (rail_tops[j] - 4) - 1))
+
     # -------------------------------- cards: 5 across x 2 rows
-    cy = 385
+    cy = 384
     cw = (RX - MX - 40) // 5
     chh = 148
     for i, card in enumerate(CARDS):
@@ -1051,7 +1116,9 @@ def main():
         d.text((x + cw - cwid + 2, yy0 + 42), ct, font=SANS_B(9),
                fill=scol)
         ov = CARD_OVERLAYS[i]
-        if len(ov) <= 5:
+        if i == 1:
+            ov_font = SANS_B(15)
+        elif len(ov) <= 5:
             ov_font = SANS_B(28)
         elif len(ov) <= 9:
             ov_font = SANS_B(24)
@@ -1071,6 +1138,41 @@ def main():
         d.text((x + 9, yy0 + 42), tab_t, font=SANS_B(9),
                fill=(255, 255, 255))
         check_h(f"card{i+4} tab", tab_t, SANS_B(9), x + 9, x + 184)
+        # STRIP-AUDIT (finding class closed 2026-11-24): the overlay
+        # is measured from its GLYPH INK (stroke included) against
+        # this strip's own outline, its own pictogram pixels and the
+        # flag/tab/chip furniture. No own-scene exception.
+        _bg = np.array(tmp.getpixel((0, 0)))
+        _gfx = (np.array(tmp) != _bg).any(axis=2)
+        _oc = Image.new("RGB", (190, 55), (255, 255, 255))
+        _od = ImageDraw.Draw(_oc)
+        _od.text((cw - ow - 7, 1), ov, font=ov_font, fill=(0, 0, 0),
+                 stroke_width=2, stroke_fill=(0, 0, 0))
+        _ink = (np.array(_oc) < 128).any(axis=2)
+        _ys, _xs = np.nonzero(_ink)
+        _ib = (int(_xs.min()), int(_ys.min()), int(_xs.max()) + 1,
+               int(_ys.max()) + 1)
+        _edges = (_ib[0] + 1, _ib[1] + 1, 191 - _ib[2], 55 - _ib[3])
+        if (_gfx & _ink).any():
+            _gd = 0
+        else:
+            _gd = 99
+            _cur = np.pad(_gfx, 14)
+            for _step in range(1, 13):
+                _nxt = _cur.copy()
+                for _a in (-1, 0, 1):
+                    for _b in (-1, 0, 1):
+                        _nxt |= np.roll(np.roll(_cur, _a, 0), _b, 1)
+                _cur = _nxt
+                _hit = _cur[14 + _ib[1]:14 + _ib[3],
+                            14 + _ib[0]:14 + _ib[2]]
+                if _hit[_ink[_ib[1]:_ib[3], _ib[0]:_ib[2]]].any():
+                    _gd = _step
+                    break
+        _furn = min(_gap(_ib, (2, 2, 26, 18)),
+                    _gap(_ib, (2, 38, 2 + tw, 51)),
+                    _gap(_ib, (cw - cwid - 4, 38, cw - 4, 51)))
+        STRIP_AUDIT.append((i + 4, ov, _edges, _gd, _furn))
         d.text((x, yy0 + 59), field.upper(), font=SANS_B(11), fill=col)
         sw2 = d.textlength(src, font=SANS(12))
         d.text((x + cw - sw2, yy0 + 58), src, font=SANS(12),
@@ -1083,7 +1185,7 @@ def main():
                    cw - 4, 17, max_lines=1, tag=f"carddeck{i}")
 
     # -------------------------------- bottom: map + ALSO two tiers
-    by0 = 688
+    by0 = 687
     d.line([MX, by0, RX, by0], fill=INK, width=2)
     LINES.append(((MX, by0, RX, by0), "bottom rule"))
     d.text((MX, by0 + 1), "WHERE IT HAPPENED", font=SANS_B(14),
@@ -1164,14 +1266,14 @@ def main():
             yy += 36
 
     # -------------------------------- DATE CHECK box
-    dy = 956
-    d.rectangle([MX, dy, RX, dy + 41], fill=(253, 240, 238),
+    dy = 954
+    d.rectangle([MX, dy, RX, dy + 45], fill=(253, 240, 238),
                 outline=RED, width=2)
     LINES.append(((MX, dy, RX, dy), "datecheck top"))
-    LINES.append(((MX, dy + 41, RX, dy + 41), "datecheck bottom"))
-    d.rectangle([MX + 6, dy + 13, MX + 112, dy + 29], fill=RED)
+    LINES.append(((MX, dy + 45, RX, dy + 45), "datecheck bottom"))
+    d.rectangle([MX + 6, dy + 14, MX + 112, dy + 30], fill=RED)
     tw = d.textlength("DATE CHECK", font=SANS_B(11))
-    d.text((MX + 59 - tw / 2, dy + 16), "DATE CHECK", font=SANS_B(11),
+    d.text((MX + 59 - tw / 2, dy + 17), "DATE CHECK", font=SANS_B(11),
            fill=(255, 255, 255))
     dc = ("Left out, first reported before Monday: COP31 no-deal "
           "collapse (Sun 22), first failure since Copenhagen "
@@ -1186,11 +1288,19 @@ def main():
           + " (Sat 21); Alcaraz, M\u00e1rquez, Liverpool 4-0 (Sun 22); "
           "BepiColombo in orbit (Sat 21). Not yet: the Kharg convoy; a COP32 "
           "date; the final Dymer toll; US strikes after the New Year.")
-    text_block(d, MX + 122, dy, dc, SANS(11), (52, 48, 42),
+    TAG[0] = "datecheck"
+    text_block(d, MX + 122, dy + 2, dc, SANS(11), (52, 48, 42),
                RX - MX - 130, 14, max_lines=3, tag="datecheck")
+    TAG[0] = None
+    _dcb = [b for b, s, t in TEXT_BOXES if t == "datecheck"]
+    DC_AUDIT.append(("datecheck",
+                     (min(b[0] for b in _dcb) - MX,
+                      min(b[1] for b in _dcb) - dy,
+                      RX - max(b[2] for b in _dcb),
+                      (dy + 45) - max(b[3] for b in _dcb))))
 
     # -------------------------------- footer
-    fy = 998
+    fy = 999
     left = ("Every story happened or was first reported on Mon 23 Nov "
             "2026; claims attributed.")
     d.text((MX, fy), left, font=SANS(11), fill=(52, 48, 42))
@@ -1220,6 +1330,29 @@ def main():
     for lab, v in H_CHECKS:
         if v > -30:
             print(f"  h-check {lab}: slack {-v:+.1f}px")
+    for _num, _ov, _e, _gd, _furn in STRIP_AUDIT:
+        print(f"STRIP-AUDIT card{_num} '{_ov}': edges L/T/R/B="
+              f"{_e[0]}/{_e[1]}/{_e[2]}/{_e[3]}, gfx {_gd}, "
+              f"furniture {_furn}")
+        if min(_e) < 3 or _gd < 3 or _furn < 3:
+            OVERFLOWS.append(f"STRIP-AUDIT card{_num} '{_ov}': "
+                             f"edges {_e}, gfx {_gd}, furn {_furn}")
+    for _name, _s, _m in HERO_AUDIT + PLATE_AUDIT:
+        print(f"LABEL-AUDIT {_name} '{_s}': margins L/T/R/B="
+              f"{_m[0]}/{_m[1]}/{_m[2]}/{_m[3]}")
+        if min(_m) < 3:
+            OVERFLOWS.append(f"LABEL-AUDIT {_name}: margins {_m}")
+    for _name, _cap, _num2 in RAIL_AUDIT:
+        print(f"RAIL-AUDIT {_name}: caption-side clear {_cap}px, "
+              f"number-side clear {_num2}px")
+        if _num2 < 3 or _cap < 0:
+            OVERFLOWS.append(f"RAIL-AUDIT {_name}: caption {_cap}, "
+                             f"number {_num2}")
+    for _name, _m in DC_AUDIT:
+        print(f"DC-AUDIT {_name}: margins L/T/R/B="
+              f"{_m[0]}/{_m[1]}/{_m[2]}/{_m[3]}")
+        if min(_m) < 3:
+            OVERFLOWS.append(f"DC-AUDIT {_name}: margins {_m}")
     for tb, plate, margins in BANNER_CHECK:
         print(f"BANNER bbox text={tb} plate={plate} "
               f"margins L/T/R/B={margins}")
