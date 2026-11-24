@@ -35,7 +35,12 @@ density matches the other heroes; the rail is in bagarte's
 format (each figure on its own line, its caption directly
 below, left edges aligned, hairlines between entries);
 timeline columns exactly even (fractional step)
-with centred entries.
+with centred entries. The red masthead bar flanks the date
+instead of crossing it: the date ink spans y=21..95, so a
+full-width bar at that height would strike the glyphs — the
+MASTHEAD-AUDIT holds the date ink >=3px from both lines, the
+strap/eyebrow >=3px from the bar and the timeline times
+>=3px from the date rule.
 
 Finding class closed after an independent visual inspection
 (2-4x zoom) caught what the box audits could not see: overlay
@@ -82,6 +87,7 @@ HERO_AUDIT = []
 PLATE_AUDIT = []
 RAIL_AUDIT = []
 DC_AUDIT = []
+MASTHEAD_AUDIT = []
 FIG = {f["key"]: f["display"]
        for f in json.loads((HERE / "figures.json").read_text())["figures"]}
 
@@ -976,15 +982,25 @@ def main():
     d.text((RX - rw, -3), eye_r, font=SANS_B(22), fill=INK)
     check_h("eyebrow left", "ONE DAY OF WORLD NEWS, ONE PICTURE",
             SANS_B(15), MX, RX - rw - 8)
-    d.rectangle([MX, 30, RX, 33], fill=RED)
     date = "Monday 23 November 2026"
     dw = d.textlength(date, font=SERIF(76))
+    _dbb = d.textbbox((0, 0), date, font=SERIF(76))
+    _dil = (W - dw) / 2 + _dbb[0]
+    _dir = (W - dw) / 2 + _dbb[2]
+    # The red masthead bar flanks the date: a full-width bar at
+    # this height would strike through the date glyphs (their ink
+    # spans y=21..95), so it runs in the two side gaps only, 5px
+    # clear of the date ink (MASTHEAD-AUDIT).
+    for _s0, _s1 in ((MX, _dil - 5), (_dir + 5, RX)):
+        d.rectangle([_s0, 30, _s1, 33], fill=RED)
+        LINES.append(((_s0, 30, _s1, 30), "masthead bar top"))
+        LINES.append(((_s0, 33, _s1, 33), "masthead bar bottom"))
     d.text(((W - dw) / 2, -2), date, font=SERIF(76), fill=INK)
-    d.line([MX, 97, RX, 97], fill=INK, width=2)
-    LINES.append(((MX, 97, RX, 97), "date rule"))
+    d.line([MX, 99, RX, 99], fill=INK, width=2)
+    LINES.append(((MX, 99, RX, 99), "date rule"))
 
     # -------------------------------- timeline: THE DAY IN UTC
-    ty = 98
+    ty = 100
     d.rectangle([MX, ty, MX + 56, ty + 24], fill=RED)
     for j, s in enumerate(("THE DAY", "IN UTC")):
         tw = d.textlength(s, font=SANS_B(9))
@@ -1007,9 +1023,31 @@ def main():
                           f"tl sep {i}"))
     d.line([MX, ty + 27, RX, ty + 27], fill=(150, 142, 126), width=1)
     LINES.append(((MX, ty + 27, RX, ty + 27), "timeline rule"))
+    # MASTHEAD-AUDIT (finding class closed 2026-11-24): the date
+    # ink vs BOTH masthead lines, the strap/eyebrow ink vs the
+    # red bar, and the timeline times vs the date rule — all from
+    # recorded glyph-ink boxes, all >= 3px.
+    _boxes = {s: b for b, s, t in TEXT_BOXES}
+    _date_b = _boxes["Monday 23 November 2026"]
+    _strap_b = next(b for b, s, t in TEXT_BOXES
+                    if s.startswith("34 STORIES"))
+    _eye_b = _boxes["ONE DAY OF WORLD NEWS, ONE PICTURE"]
+    MASTHEAD_AUDIT.append(("date ink vs red bar (side)",
+                           round(min(_date_b[0] - ( _dil - 5),
+                                     (_dir + 5) - _date_b[2]))))
+    MASTHEAD_AUDIT.append(("date ink vs date rule",
+                           99 - _date_b[3]))
+    MASTHEAD_AUDIT.append(("strap ink vs red bar",
+                           30 - _strap_b[3]))
+    MASTHEAD_AUDIT.append(("eyebrow ink vs red bar",
+                           30 - _eye_b[3]))
+    _times = [b for b, s, t in TEXT_BOXES
+              if s in {tm for tm, _ in TIMELINE}]
+    MASTHEAD_AUDIT.append(("timeline times vs date rule",
+                           min(b[1] for b in _times) - 99))
 
     # -------------------------------- heroes + THE DAY IN NUMBERS rail
-    hy = 126
+    hy = 128
     hw = 266
     for i, hero in enumerate(HEROES):
         place, region, field, head, deck, src, sure, big, biglab = hero
@@ -1091,7 +1129,7 @@ def main():
                            rail_tops[j] - (rail_tops[j] - 4) - 1))
 
     # -------------------------------- cards: 5 across x 2 rows
-    cy = 384
+    cy = 385
     cw = (RX - MX - 40) // 5
     chh = 148
     for i, card in enumerate(CARDS):
@@ -1348,6 +1386,10 @@ def main():
         if _num2 < 3 or _cap < 0:
             OVERFLOWS.append(f"RAIL-AUDIT {_name}: caption {_cap}, "
                              f"number {_num2}")
+    for _name, _dist in MASTHEAD_AUDIT:
+        print(f"MASTHEAD-AUDIT {_name}: {_dist}px")
+        if _dist < 3:
+            OVERFLOWS.append(f"MASTHEAD-AUDIT {_name}: {_dist}px")
     for _name, _m in DC_AUDIT:
         print(f"DC-AUDIT {_name}: margins L/T/R/B="
               f"{_m[0]}/{_m[1]}/{_m[2]}/{_m[3]}")
