@@ -1061,7 +1061,9 @@ def main():
     d.text((MX + 59 - tw / 2, dy + 21), "DATE CHECK", font=SANS_B(12),
            fill=(255, 255, 255))
     dc = ("Left out, first reported before Monday: COP31 no-deal "
-          "collapse (Sun 22); Iran's Bahrain strike \u2014 IRGC claims "
+          "collapse (Sun 22), first failure since Copenhagen "
+          + FIG["cop31_last_nodeal"] + ", " + FIG["cop31_gap_years"]
+          + " years on; Iran's Bahrain strike \u2014 IRGC claims "
           + FIG["bahrain_radars_claim"]
           + " radars hit, Bahrain says " + FIG["bahrain_injured"]
           + " hurt, " + FIG["bahrain_critical"]
